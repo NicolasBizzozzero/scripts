@@ -4,15 +4,15 @@ from os import system as run_command
 
 def create_a_correct_command(youtube_url: str) -> str:
     return (r"youtube-dl "
-            #            "--extract-audio "
-            #            "--audio-format m4a "
-            #            "--audio-quality 0 "
-            "--embed-thumbnail "
+            "--extract-audio "
+            "--audio-format m4a "
+            "--audio-quality 0 "
+            #"--embed-thumbnail "
             "-o C:/Users/Nicolas/Downloads///%(title)s.%(ext)s "
-            #            "--prefer-ffmpeg "
-            #            "--ffmpeg-location C:/Program Files (x86)/Youtube DL/ffmpeg-20160922-7d17d31-win64-static/bin"
-            "--limit-rate 20K "
-            "--ignore-errors "
+            #"--prefer-ffmpeg "
+            #"--ffmpeg-location C:/Program Files (x86)/Youtube DL/ffmpeg-20160922-7d17d31-win64-static/bin "
+            #"--limit-rate 30K "
+            #"--ignore-errors "
             + youtube_url
             )
 
@@ -40,3 +40,7 @@ if __name__ == '__main__':
 # "C:/Users/Nicolas/Downloads///%(playlist_index)s - %(title)s.%(ext)s"
 # --limit-rate 30K --ignore-errors
 # https://www.youtube.com/playlist?list=PL7XlqX4npddfrdpMCxBnNZXg2GFll7t5y
+
+
+
+"youtube-dl --limit-rate 30K --extract-audio --audio-format m4a --audio-quality 0 --embed-thumbnail -o C:/Users/Nicolas/Downloads///%(title)s.%(ext)s --prefer-ffmpeg --ffmpeg-location C:/Program Files (x86)/Youtube DL/ffmpeg-20160922-7d17d31-win64-static/bin"
