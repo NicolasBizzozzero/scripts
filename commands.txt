@@ -1,0 +1,8 @@
+# Download mp4 file from ok.ru
+
+
+# Extract audio file from a mp4 file
+ffmpeg -i INPUT.mp4 -vn -c:a copy OUTPUT.m4a
+
+# Extract audio from all mp4 files in a directory
+for "%f" in (*.mp4) do ffmpeg -i "%f" -vn -c:a copy "%~nf.m4a"
