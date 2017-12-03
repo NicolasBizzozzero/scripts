@@ -1,0 +1,1 @@
+wget -r --no-check-certificate -e robots=off $URL

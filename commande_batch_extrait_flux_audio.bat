@@ -1,0 +1,1 @@
+for %i in (*) do ffmpeg -i "%i" -vn -acodec copy "%i.aac"
