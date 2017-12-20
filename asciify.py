@@ -17,7 +17,7 @@ import unicodedata
 
 _DEFAULT_CHAR = "_"
 
-_STR_USAGE = "Usage: python asciify.py <FILES> [-d --default-char <CHAR>]"
+_STR_USAGE = "Usage: python asciify.py <FILES> ... [-d --default-char <CHAR>]"
 _STR_WRONG_NUMBER_ARGUMENTS = "Error: Wrong number of arguments"
 _STR_FILE_EXISTS = ("Error: Can't rename \"{old_name}\" into \"{new_name}\" "
                     "without erasing an existing file")
@@ -37,7 +37,7 @@ def main():
 
     files, default_char = _parse_args(argv)
 
-    _asciify(files=files, default_char=default_char)
+    asciify(files=files, default_char=default_char)
 
     exit(_CODE_SUCCESS)
 
@@ -49,7 +49,7 @@ def _parse_args(argv):
     files = []
 
     parse_default_char = False
-    for param in argv:
+    for param in argv[1:]:
         if parse_default_char:
             parse_default_char = False
             default_char = param
@@ -62,7 +62,7 @@ def _parse_args(argv):
     return files, default_char
 
 
-def _asciify(files, default_char):
+def asciify(*, files, default_char):
     for file in files:
         if not _is_ASCII(file):
             new_name = _convert_to_ascii(string=file,
