@@ -13,7 +13,7 @@ Error codes :
 2 - The file does not exists
 """
 import sys
-from os import system as run_command
+import os
 import re
 
 
@@ -24,7 +24,7 @@ _PARAM_EXTRACT_AUDIO = "-f 140"
 _PARAM_IGNORE_ERRORS = "--ignore-errors"
 _PARAM_LIMIT_RATE = "--limit-rate {limit}K"  # In kilo-octet per seconds
 
-_STR_USAGE = "Usage: python m4a_dl.py <URL> ... [-f --file <FILE>] [-r --regex <REGEX>] [-e --encoding <ENCODING>]"
+_STR_USAGE = "Usage: python m4a_dl.py <URL> ... [-f --file <FILE>] [-r --regex <REGEX>] [-e --encoding <ENCODING>] [-l --limit-rate <LIMIT>]"
 _STR_WRONG_NUMBER_ARGUMENTS = "Error: Wrong number of arguments"
 _STR_FILE_DOES_NOT_EXISTS = "Error: Not such file \"{file}\""
 
@@ -40,7 +40,7 @@ def main():
         exit(_CODE_WRONG_NUMBER_ARGUMENT)
 
     # Unpack parameters
-    urls, url_regex, input_file, encoding = _parse_args(sys.argv)
+    urls, url_regex, input_file, encoding, limit_rate = _parse_args(sys.argv)
 
     # Download URLs from command-line
     for url in urls:
@@ -60,10 +60,12 @@ def _parse_args(argv):
     url_regex = _DEFAULT_URL_REGEX
     input_file = None
     encoding = None
+    limit_rate = None
 
     parse_url_regex = False
     parse_input_file = False
     parse_encoding = False
+    parse_limit_rate = False
     for param in argv[1:]:
         if parse_url_regex:
             parse_url_regex = False
@@ -76,6 +78,10 @@ def _parse_args(argv):
         if parse_encoding:
             parse_encoding = False
             encoding = param
+            continue
+        if parse_limit_rate:
+            parse_limit_rate = False
+            limit_rate = float(param)
             continue
 
         if param in ("-r", "--regex"):
@@ -90,21 +96,30 @@ def _parse_args(argv):
             parse_encoding = True
             continue
 
+        if param in ("-l", "--limit-rate"):
+            parse_limit_rate = True
+            continue
+
         else:
             urls.append(param)
-    return urls, url_regex, input_file, encoding
+    return urls, url_regex, input_file, encoding, limit_rate
 
 
-def m4a_dl(*, url, url_regex):
+def m4a_dl(*, url, url_regex, limit_rate):
     """ Download the M4A flux from a video located at an URL. """
-    pass
+    if _is_url(url, url_regex):
+        _download(url=url, limit_rate=limit_rate)
 
 
-def m4a_dl_file(*, file, url_regex, encoding):
+def m4a_dl_file(*, file, url_regex, encoding, limit_rate):
     """ Download the M4A flux of all the URLs stored in `file`. """
+    if not os.fileexists(file):
+        print(_STR_FILE_DOES_NOT_EXISTS)
+        exit(_CODE_FILE_DOES_NOT_EXISTS)
+        
     for line in _iter_lines(file):
         if _is_url(line, url_regex=url_regex):
-            pass
+            _download(url=line, limit_rate=limit_rate)
 
 
 def _iter_lines(file, encoding="utf8"):
@@ -115,30 +130,22 @@ def _iter_lines(file, encoding="utf8"):
 
 
 def _is_url(string, url_regex):
+    """ Return a boolean corresponding to the matching of `string` by the URL's REGEX provided. """
+    return return True if re.match(string) else False
 
 
-def _download_all_urls_from_file(path, encoding="utf8"):
-    with open(path, encoding=encoding) as file:
-        for url in file:
-            if url:  # Prevent empty lines to produce wrong commands
-                _download_audio(url)
+def _download(url, limit_rate):
+    command = _format_command(url, limit_rate)
+    os.system(command)
 
 
-def _download_audio(url):
-    command = _format_command(url, PARAM_AUDIO_M4A)
-    run_command(command)
-
-
-def _check_errors(argv):
-    if (len(argv) != 2):
-        print("You need to pass at least one argument.\n", USAGE)
-        exit(1)
-
-
-def _format_command(url, *params):
-    command = MAIN_COMMAND
-    for param in params:
-        command = "{} {}".format(command, param)
+def _format_command(url, limit_rate):
+    """ Format a 'youtube-dl' command which'll be called by a terminal. """
+    global _MAIN_COMMAND, _PARAM_EXTRACT_AUDIO, _PARAM_IGNORE_ERRORS, _PARAM_LIMIT_RATE
+    
+    command = "{} {}".format(_MAIN_COMMAND, _PARAM_EXTRACT_AUDIO, _PARAM_IGNORE_ERRORS)
+    if limit_rate:
+        command = "{} {}".format(command, _PARAM_LIMIT_RATE.format(limit=limit_rate))
     return "{} {}".format(command, url)
 
 
