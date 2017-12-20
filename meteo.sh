@@ -22,4 +22,5 @@ fi
 
 LOCATION="$1"
 
+echo "${HOST_URL}$1"
 curl -4 "${HOST_URL}$1"
