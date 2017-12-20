@@ -17,16 +17,21 @@ import os
 import re
 
 
-_DEFAULT_URL_REGEX = re.compile(r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+%")
+_DEFAULT_URL_REGEX = re.compile(r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
 
 _MAIN_COMMAND = "youtube-dl"
 _PARAM_EXTRACT_AUDIO = "-f 140"
 _PARAM_IGNORE_ERRORS = "--ignore-errors"
 _PARAM_LIMIT_RATE = "--limit-rate {limit}K"  # In kilo-octet per seconds
 
-_STR_USAGE = "Usage: python m4a_dl.py <URL> ... [-f --file <FILE>] [-r --regex <REGEX>] [-e --encoding <ENCODING>] [-l --limit-rate <LIMIT>]"
+_STR_USAGE = ("Usage: python m4a_dl.py <URL> ... "
+              "[-f --file <FILE>] "
+              "[-r --regex <REGEX>] "
+              "[-e --encoding <ENCODING>] "
+              "[-l --limit-rate <LIMIT>]")
 _STR_WRONG_NUMBER_ARGUMENTS = "Error: Wrong number of arguments"
 _STR_FILE_DOES_NOT_EXISTS = "Error: Not such file \"{file}\""
+_STR_NOT_URL = "The following parameter is not a valid URL : \"{string}\""
 
 _CODE_SUCCESS = 0
 _CODE_WRONG_NUMBER_ARGUMENT = 1
@@ -34,7 +39,7 @@ _CODE_FILE_DOES_NOT_EXISTS = 2
 
 
 def main():
-    if len(argv) <= 1:
+    if len(sys.argv) <= 1:
         print(_STR_WRONG_NUMBER_ARGUMENTS)
         print(_STR_USAGE)
         exit(_CODE_WRONG_NUMBER_ARGUMENT)
@@ -44,7 +49,7 @@ def main():
 
     # Download URLs from command-line
     for url in urls:
-        m4a_dl(url=url, url_regex=url_regex)
+        m4a_dl(url=url, url_regex=url_regex, limit_rate=limit_rate)
 
     # Download URLs from file
     if input_file:
@@ -69,7 +74,7 @@ def _parse_args(argv):
     for param in argv[1:]:
         if parse_url_regex:
             parse_url_regex = False
-            intensity = re.compile(param)
+            url_regex = re.compile(param)
             continue
         if parse_input_file:
             parse_input_file = False
@@ -109,6 +114,8 @@ def m4a_dl(*, url, url_regex, limit_rate):
     """ Download the M4A flux from a video located at an URL. """
     if _is_url(url, url_regex):
         _download(url=url, limit_rate=limit_rate)
+    else:
+        print(_STR_NOT_URL.format(string=url))
 
 
 def m4a_dl_file(*, file, url_regex, encoding, limit_rate):
@@ -116,7 +123,7 @@ def m4a_dl_file(*, file, url_regex, encoding, limit_rate):
     if not os.fileexists(file):
         print(_STR_FILE_DOES_NOT_EXISTS)
         exit(_CODE_FILE_DOES_NOT_EXISTS)
-        
+
     for line in _iter_lines(file):
         if _is_url(line, url_regex=url_regex):
             _download(url=line, limit_rate=limit_rate)
@@ -130,8 +137,10 @@ def _iter_lines(file, encoding="utf8"):
 
 
 def _is_url(string, url_regex):
-    """ Return a boolean corresponding to the matching of `string` by the URL's REGEX provided. """
-    return return True if re.match(string) else False
+    """ Return a boolean corresponding to the matching of `string` by the
+    URL's REGEX provided.
+    """
+    return True if re.match(url_regex, string) else False
 
 
 def _download(url, limit_rate):
@@ -141,11 +150,14 @@ def _download(url, limit_rate):
 
 def _format_command(url, limit_rate):
     """ Format a 'youtube-dl' command which'll be called by a terminal. """
-    global _MAIN_COMMAND, _PARAM_EXTRACT_AUDIO, _PARAM_IGNORE_ERRORS, _PARAM_LIMIT_RATE
-    
-    command = "{} {}".format(_MAIN_COMMAND, _PARAM_EXTRACT_AUDIO, _PARAM_IGNORE_ERRORS)
+    global _MAIN_COMMAND, _PARAM_EXTRACT_AUDIO, _PARAM_IGNORE_ERRORS,\
+        _PARAM_LIMIT_RATE
+
+    command = "{} {}".format(
+        _MAIN_COMMAND, _PARAM_EXTRACT_AUDIO, _PARAM_IGNORE_ERRORS)
     if limit_rate:
-        command = "{} {}".format(command, _PARAM_LIMIT_RATE.format(limit=limit_rate))
+        command = "{} {}".format(
+            command, _PARAM_LIMIT_RATE.format(limit=limit_rate))
     return "{} {}".format(command, url)
 
 
