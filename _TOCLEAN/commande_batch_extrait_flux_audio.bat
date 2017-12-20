@@ -1,1 +1,1 @@
-for %i in (*) do ffmpeg -i "%i" -vn -acodec copy "%i.aac"
+for "%f" in (*.mp4) do ffmpeg -i "%f" -vn -c:a copy "%~nf.m4a"
