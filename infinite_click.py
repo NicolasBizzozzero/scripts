@@ -63,7 +63,7 @@ def _parse_args(argv):
             elif coordinate_y is None:
                 coordinate_y = int(param)
             else:
-                # I don't know waht I just parsed
+                # I don't know what I just parsed
                 pass
     return (coordinate_x, coordinate_y), sleeping_time
 
