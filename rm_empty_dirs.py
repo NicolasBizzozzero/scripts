@@ -1,6 +1,5 @@
 """ Remove empty folders recursively.
 
-
 Inspired by :
 * https://gist.github.com/jacobtomlinson/9031697
 
