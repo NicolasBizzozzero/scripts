@@ -1,1 +1,0 @@
-for "%f" in (*.mp4) do ffmpeg -i "%f" -vn -c:a copy "%~nf.m4a"
