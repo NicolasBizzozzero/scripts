@@ -9,7 +9,7 @@
 
 readonly DIR_NUMBER=10
 
-readonly USAGE='Usage: ppti_open_dir.sh'
+readonly USAGE='Usage: ppti_open_homes.sh'
 
 
 if [ "$#" -ne 0 ]; then
