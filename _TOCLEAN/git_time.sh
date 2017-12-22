@@ -26,11 +26,11 @@
 # 1: Wrong number of arguments
 
 
-readonly USAGE='Usage: git_time.sh <DATE> <COMMIT_MESSAGE>'  #[-m --message <COMMIT_MESSAGE>]'
+readonly USAGE='Usage: git_time.sh <DATE> <PARENT_COMMIT> <COMMIT_MESSAGE> <BRANCH_NAME>'  #[-m --message <COMMIT_MESSAGE>]'
 
 
 # Check parameters' validity
-if [ "$#" -lt 1 ]; then
+if [ "$#" -lt 2 ]; then
   >&2 echo "Wrong number of arguments"
   >&2 echo "$USAGE"
   exit 1
@@ -39,7 +39,9 @@ fi
 # TODO: wtf is this not working
 # Unpack parameters
 param_date="$1"
-param_message="$2"
+param_parent_commit="$2"
+param_message="$3"
+param_branch_name="$4"
 
 # optspec="m:-:"
 # while getopts "$optspec" flag; do
@@ -68,11 +70,16 @@ previous_committer_date="$GIT_COMMITTER_DATE"
 GIT_AUTHOR_DATE="$1"
 GIT_COMMITTER_DATE="$1"
 
+git checkout -b "$param_branch_name" "$param_parent_commit"
+git add todelete.txt
 if [ ! -z "$param_message" ]; then
   git commit -m "$param_message"
 else
   git commit
 fi
+git checkout master
+git rebase "$param_branch_name"
+git branch -d "$param_branch_name"
 
 GIT_AUTHOR_DATE="$previous_author_date"
 GIT_COMMITTER_DATE="$previous_committer_date"
