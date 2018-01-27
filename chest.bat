@@ -7,7 +7,7 @@
 :: It'll setup a directory in which you can store anything you want, then you
 :: can hide or reveal the directory by simply invocating the script again.
 :: This script mustn't be used for real security purposes, as it's easily
-:: bypassable by any humain who can read code.
+:: bypassable by any human who can read code.
 
 @ECHO off
 @TITLE Locked chest
