@@ -3,13 +3,13 @@
 # Find all commits where there message match a grep query.
 #
 # Source:
-# * https://unix.stackexchange.com/a/1572
+# * https://stackoverflow.com/a/7124949
 #
 # Error codes:
 # 1: Wrong number of arguments
 
 
-readonly USAGE='Usage: extension.sh <FILE_NAME>'
+readonly USAGE='Usage: git_grep.sh <FILE_NAME>'
 
 if [ "$#" -ne 1 ]; then
   >&2 echo "Wrong number of arguments"
@@ -17,12 +17,4 @@ if [ "$#" -ne 1 ]; then
   exit 1
 fi
 
-
-extension=`echo "$1" | awk -F . '{print $NF}'`
-
-# Case where the file does not have any extension
-if [  "$1" == "$extension" ]; then
-  echo ""
-else
-  echo "$extension"
-fi
+git log --all --grep="$1"
