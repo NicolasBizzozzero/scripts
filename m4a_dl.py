@@ -17,7 +17,8 @@ import os
 import re
 
 
-_DEFAULT_URL_REGEX = re.compile(r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
+_DEFAULT_URL_REGEX = re.compile(
+    r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
 
 _MAIN_COMMAND = "youtube-dl"
 _PARAM_EXTRACT_AUDIO = "-f 140"
@@ -53,7 +54,8 @@ def main():
 
     # Download URLs from file
     if input_file:
-        m4a_dl_file(file=input_file, url_regex=url_regex, encoding=encoding)
+        m4a_dl_file(file=input_file, url_regex=url_regex, encoding=encoding,
+                    limit_rate=limit_rate)
 
     exit(_CODE_SUCCESS)
 
@@ -120,7 +122,7 @@ def m4a_dl(*, url, url_regex, limit_rate):
 
 def m4a_dl_file(*, file, url_regex, encoding, limit_rate):
     """ Download the M4A flux of all the URLs stored in `file`. """
-    if not os.fileexists(file):
+    if not os.path.isfile(file):
         print(_STR_FILE_DOES_NOT_EXISTS)
         exit(_CODE_FILE_DOES_NOT_EXISTS)
 
@@ -131,7 +133,7 @@ def m4a_dl_file(*, file, url_regex, encoding, limit_rate):
 
 def _iter_lines(file, encoding="utf8"):
     """ Iterator yielding the content of a file line by line. """
-    with open(file, encoding=encoding):
+    with open(file, encoding=encoding) as file:
         for line in file:
             yield line
 
