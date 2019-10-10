@@ -10,9 +10,10 @@ Error codes :
 1 - Wrong number of arguments
 2 - The root directory does not exists
 """
+from pathlib import Path
 from sys import argv
 from os import listdir, rmdir
-from os.path import isdir, join
+from os.path import isdir
 
 
 _STR_USAGE = "Usage: rm_empty_dirs.py <ROOT_DIR>"
@@ -38,24 +39,14 @@ def main():
         print(_STR_ROOT_DIRECTORY_NOT_EXISTS)
         exit(_CODE_ROOT_DIRECTORY_NOT_EXISTS)
 
-    _rm_empty_dir(root_directory)
+    remove_empty_dirs(root_directory)
 
 
-def _rm_empty_dir(root_directory):
+def remove_empty_dirs(root_directory):
     """ Remove empty folders recursively. """
-    if not isdir(root_directory):
-        return
-
-    # Remove empty subfolders
-    for file in listdir(root_directory):
-        fullpath = join(root_directory, file)
-        if isdir(fullpath):
-            _rm_empty_dir(fullpath)
-
-    # if the root folder is empty, delete it
-    nonempty_files = listdir(root_directory)
-    if len(nonempty_files) == 0:
-        rmdir(root_directory)
+    for directory in Path(root_directory).rglob("*"):
+        if isdir(directory) and (len(listdir(directory)) == 0):
+            rmdir(root_directory)
 
 
 if __name__ == "__main__":
