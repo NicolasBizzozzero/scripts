@@ -14,7 +14,7 @@ RE_MAC_ADDRESS = r"([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})"
 
 def main():
     # Parse arguments
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('interface', type=str,
                         help='Interface form which to change the MAC address')
     parser.add_argument("-m", '--new-mac', type=str, default=None,

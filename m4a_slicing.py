@@ -2,14 +2,11 @@
 
 Dependencies :
 * ffmpeg
-* click
 """
-# TODO: delete this when everything works fine
-# ffmpeg -ss 1:01:42 -i c:\Data\temp\in.m4a -vn -c copy -t 1:00:00 out.m4a
 
 import re
 import subprocess
-import click
+import argparse
 
 
 _FORMAT_TIME = r"\d\d:\d\d:\d\d"
@@ -31,15 +28,28 @@ _CODE_WRONG_NUMBER_ARGUMENT = 1
 _CODE_WRONG_TIME_FORMAT = 2
 
 
-@click.command()
-@click.argument("input_file", type=click.Path(exists=True, readable=True))
-@click.argument("output_file", type=click.Path(exists=False, writable=True))
-@click.argument("timestamp")
-@click.option('--duration', default="99:59:59",
-              help="The duration of the slicing")
-@click.version_option("1.0.0")
-def main(input_file, output_file, timestamp,
-         duration) -> None:
+def main() -> None:
+    # Parse arguments
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument("input_file", type=str,
+                        help='File from which to extract the audio')
+    parser.add_argument("output_file", type=str,
+                        help='File from which to write the audio')
+    parser.add_argument("timestamp", type=str,
+                        help='Timestamp from where to start extracting the audio')
+    parser.add_argument("--duration", type=str, default="99:59:59",
+                        help='The duration of the slicing.')
+    args = parser.parse_args()
+
+    m4a_slicing(
+        input_file=args.input_file,
+        output_file=args.output_file,
+        timestamp=args.timestamp,
+        duration=args.duration
+    )
+
+
+def m4a_slicing(input_file, output_file, timestamp, duration) -> None:
     _assert_timeformat(timestamp)
     _assert_timeformat(duration)
 

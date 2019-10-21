@@ -11,7 +11,7 @@ from threading import Thread
 
 def main():
     # Parse arguments
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("zip_file", type=str,
                         help="Zip file to bruteforce")
     parser.add_argument("dictionary", type=str,

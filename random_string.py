@@ -9,7 +9,7 @@ import argparse
 
 def main():
     # Parse arguments
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("-n", "--size", type=int, default=32,
                         help='Number of characters to generate')
     parser.add_argument("-f", "--forbidden-chars", type=str, default="",

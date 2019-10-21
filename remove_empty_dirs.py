@@ -6,7 +6,7 @@ import pathlib
 
 def main():
     # Parse arguments
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('root_directories', metavar='DIR', type=str, nargs='+',
                         help='Directories from which to delete all empty dirs')
     args = parser.parse_args()

@@ -10,10 +10,11 @@ Error codes :
 3 - The file is not an image or its format is currently not supported
 """
 
-from PIL import ImageFilter, ImageFile, Image
 from os import listdir, remove
 from os.path import isfile
 from sys import argv
+
+from PIL import ImageFilter, ImageFile, Image
 
 
 _STR_USAGE = "Usage: python blur.py <FILES> ... [-i --intensity <INTENSITY>]"

@@ -2,15 +2,11 @@
 
 Dependencies :
 * https://github.com/NicolasBi/scripts/git_time.sh
-* click
 """
 
 import subprocess
 import datetime
 import random
-import time
-
-import click
 
 
 _RANGE_NUMBER_COMMIS = (1, 4)
@@ -30,11 +26,11 @@ _CODE_WRONG_NUMBER_ARGUMENT = 1
 _CODE_WRONG_TIME_FORMAT = 2
 
 
-@click.command()
-@click.parameter("git_time", type=click.File(exists=True, readable=True),
-                 default=".git_time.sh")
-@click.version_option("0.0.1")
-def main(git_time) -> None:
+def main():
+    github_history_cheat()
+
+
+def github_history_cheat():
     for month in _MONTHS[:-1]:
         for day in range(1, 28):
             today = datetime.datetime.now()

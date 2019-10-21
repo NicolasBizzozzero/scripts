@@ -12,7 +12,7 @@ import uuid
 
 def main():
     # Parse arguments
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('root_directory', metavar='DIR', type=str,
                         help='Directory to flatten')
     args = parser.parse_args()

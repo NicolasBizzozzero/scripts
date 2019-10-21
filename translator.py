@@ -7,7 +7,7 @@ import argparse
 
 def main():
     # Parse arguments
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     subparsers = parser.add_subparsers()
 
     # Subcommand add

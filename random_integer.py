@@ -7,7 +7,7 @@ import argparse
 
 def main():
     # Parse arguments
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("-s", '--seed', type=int, default=None,
                         help='seed used to start the generator. gcc defaults to time.time()')
     parser.add_argument('--modulus', type=int, default=2 ** 31,

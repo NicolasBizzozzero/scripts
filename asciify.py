@@ -9,9 +9,11 @@ Error codes :
 2 - Renaming a file as failed because the new file already exists
 3 - A file passed by argument has not been found
 """
+
 from __future__ import print_function
 from sys import argv
 from os import rename
+
 import unicodedata
 
 

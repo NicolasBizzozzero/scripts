@@ -32,7 +32,7 @@ _INT_TO_WORD = {
 
 def main():
     # Parse arguments
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("-t", "--time", type=str, default=None,
                         help='Time to enumerate. If not provided, default to current time.')
     parser.add_argument("-s", "--separator", type=str, default=":",
