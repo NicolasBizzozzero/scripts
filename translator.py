@@ -9,7 +9,8 @@ from googletrans import Translator
 
 def main():
     # Parse arguments
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     subparsers = parser.add_subparsers()
 
     # Subcommand add
@@ -40,10 +41,16 @@ def main():
     parser_translate.add_argument('-n', "--iterations", type=int, default=3,
                                   help="Number of times to repeat the translation.")
 
+    # Subcommand nato
+    parser_nato = subparsers.add_parser('nato')
+    parser_nato.set_defaults(func=nato)
+    parser_nato.add_argument('string', type=str)
+
     args = parser.parse_args()
 
     if not hasattr(args, "func"):
-        print("No subcommand has been given. See `--help` for all possible subcommands.")
+        print("No subcommand has been given. See `--help` for all possible "
+              "subcommands.")
         exit(1)
 
     if args.func.__name__ == "spongify":
@@ -61,6 +68,8 @@ def main():
             lang_dest=args.lang_dest,
             iterations=args.iterations
         )
+    elif args.func.__name__ == "nato":
+        translation = args.func(string=args.string)
 
     print(translation)
 
@@ -112,6 +121,55 @@ def translate(string, lang_src, lang_dest, iterations: int = 3):
     return string
 
 
+def nato(string):
+    charmap = {
+        'a': "alpha",
+        'b': "bravo",
+        'c': "charlie",
+        'd': "delta",
+        'e': "echo",
+        'f': "foxtrot",
+        'g': "golf",
+        'h': "hotel",
+        'i': "india",
+        'j': "juliett",
+        'k': "kilo",
+        'l': "lima",
+        'm': "mike",
+        'n': "november",
+        'o': "oscar",
+        'p': "papa",
+        'q': "quebec",
+        'r': "romeo",
+        's': "sierra",
+        't': "tango",
+        'u': "uniform",
+        'v': "victor",
+        'w': "whisky",
+        'x': "x-ray",
+        'y': "yankee",
+        'z': "zulu",
+        '0': "zero",
+        '1': "one",
+        '2': "two",
+        '3': "three",
+        '4': "four",
+        '5': "five",
+        '6': "six",
+        '7': "seven",
+        '8': "eight",
+        '9': "nine",
+        ',': "comma",
+        '.': "STOP",
+    }
+
+    string = list(map(lambda c: _char_to_nato_alphabet(c, charmap),
+                      string))
+    string = list(filter(lambda c: c != '', string))
+    string = _capitalize_sentence(string)
+    return " ".join(string)
+
+
 def _replace_substrings(string, map_substrings):
     # Iterate through keys by length, in reverse order
     for item in sorted(map_substrings.keys(), key=len, reverse=True):
@@ -151,6 +209,24 @@ def _translate(string: str, lang_src: str = None, lang_dest: str = 'en'):
     language.
     """
     return Translator().translate(string, src=lang_src, dest=lang_dest).text
+
+
+def _char_to_nato_alphabet(char, charmap):
+    if char in ('!', '?'):
+        return charmap['.']
+    if char in (' ',):
+        return ''
+    return charmap[char.lower()]
+
+
+def _capitalize_sentence(sentence):
+    # Capitalize first word
+    sentence[0] = sentence[0].capitalize()
+
+    for i in range(len(sentence) - 1):
+        if sentence[i] == "STOP":
+            sentence[i + 1] = sentence[i + 1].capitalize()
+    return sentence
 
 
 if __name__ == '__main__':
